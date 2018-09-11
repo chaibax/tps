@@ -113,9 +113,19 @@
     margin-right: $default-spacer;
   }
 
-  &.dropdown {
-    position: relative;
+  &.icon-only {
+    padding: 9px 16px;
 
+    .icon {
+      margin-right: 0;
+    }
+  }
+}
+
+.dropdown {
+  position: relative;
+
+  .dropdown-button {
     &::after {
       content: "▾";
       margin-left: $default-spacer;
@@ -128,24 +138,14 @@
         color: $blue;
       }
     }
-
-    .dropdown-content {
-      display: none;
-    }
-
-    &.open {
-      .dropdown-content {
-        display: block;
-      }
-    }
   }
 
-  &.icon-only {
-    padding: 9px 16px;
+  .dropdown-content {
+    display: none;
+  }
 
-    .icon {
-      margin-right: 0;
-    }
+  &.open .dropdown-content {
+    display: block;
   }
 }
 

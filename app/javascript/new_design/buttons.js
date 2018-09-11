@@ -1,13 +1,13 @@
 import $ from 'jquery';
 
-$(document).on('click', 'body', () => {
+$('body').on('click', () => {
   $('.button.dropdown').removeClass('open');
 });
 
-$(document).on('click', '.button.dropdown', event => {
+$(document).on('click', '.dropdown-button', event => {
   event.stopPropagation();
-  const $target = $(event.target);
-  if ($target.hasClass('button', 'dropdown')) {
-    $target.toggleClass('open');
+  const parent = $(event.target).parent();
+  if (parent.hasClass('dropdown')) {
+    parent.toggleClass('open');
   }
 });
