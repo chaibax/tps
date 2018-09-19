@@ -1,8 +1,9 @@
 .status-overview
   - if !dossier.termine?
     %ul.status-timeline
-      %li.brouillon{ class: dossier.brouillon? ? 'active' : nil }
-        brouillon
+      - if dossier.brouillon?
+        %li.brouillon{ class: dossier.brouillon? ? 'active' : nil }
+          brouillon
       %li.en-construction{ class: dossier.en_construction? ? 'active' : nil }
         en construction
       %li.en-instruction{ class: dossier.en_instruction? ? 'active' : nil }
@@ -18,29 +19,52 @@
 
     - elsif dossier.en_construction?
       .en-construction
-        %p Un accompagnant de l’administration est en train de vérifier que votre dossier est bien complet.
-        %p Si des modifications sont nécessaires, vous recevrez un email avec les modifications à effectuer. Et sinon, dès que votre dossier sera complet, il passera automatiquement en instruction.
+        %p Un instructeur de l’administration est en train de vérifier que votre dossier est bien complet. Si des modifications sont nécessaires, vous recevrez un message avec les modifications à effectuer.
+
+        %p
+          Sinon,
+          = succeed '.' do
+            %strong votre dossier passera directement en instruction
+
+        - if dossier.procedure.mean_verification_time
+          - cache(dossier.procedure, expires_in: 1.week) do
+            %p
+              Le temps moyen de vérification pour cette démarche est de #{distance_of_time_in_words(dossier.procedure.mean_verification_time)}.
 
     - elsif dossier.en_instruction?
       .en-instruction
-        %p Votre dossier est complet. Il est en cours d’examen par les agent·e·s de l’administration.
-        %p Dès que l’administration aura statué sur votre dossier, vous recevrez un email avec le résultat.
+        %p Votre dossier est complet. Il est en cours d’examen par les instructeur de l’administration.
+        %p
+          Dès que l’administration aura statué sur votre dossier,
+          %strong
+            vous recevrez un email
+          avec le résultat.
+        - if dossier.procedure.mean_instruction_time
+          - cache(dossier.procedure, expires_in: 1.week) do
+            %p
+              Le temps moyen d’instruction pour cette démarche est de #{distance_of_time_in_words(dossier.procedure.mean_instruction_time)}.
 
     - elsif dossier.accepte?
       .accepte
-        %p
+        %p.decision
           %span.icon.accept
           Votre dossier a été
           = succeed '.' do
             %strong accepté
 
-          - if dossier.motivation.present?
-            %h3 Motif de l’acceptation
-            %blockquote= dossier.motivation
+        - if dossier.motivation.present?
+          %h3 Motif de l’acceptation
+          %blockquote= dossier.motivation
+
+        - if dossier.attestation.present?
+          .action
+            = link_to attestation_dossier_path(dossier), target: '_blank', class: 'button primary' do
+              %span.icon.download
+              Télécharger l’attestation
 
     - elsif dossier.refuse?
       .refuse
-        %p
+        %p.decision
           %span.icon.refuse
           Nous sommes désolés, votre dossier a malheureusement été
           = succeed '.' do
@@ -50,14 +74,17 @@
           %h3 Motif du refus
           %blockquote= dossier.motivation
 
+        .action
+          = link_to 'Envoyer un message à l’administration', messagerie_dossier_url(dossier, anchor: 'new_commentaire'), class: 'button'
+
     - elsif dossier.sans_suite?
       .sans-suite
-        %p
+        %p.decision
           %span.icon.without-continuation
           Votre dossier a été classé
           = succeed '.' do
             %strong sans suite
 
-          - if dossier.motivation.present?
-            %h3 Motif du classement sans suite
-            %blockquote= dossier.motivation
+        - if dossier.motivation.present?
+          %h3 Motif du classement sans suite
+          %blockquote= dossier.motivation

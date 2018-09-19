@@ -1,6 +1,6 @@
 module ProcedureHelper
   def procedure_lien(procedure)
-    if procedure.procedure_path.present?
+    if procedure.path.present?
       if procedure.brouillon_avec_lien?
         commencer_test_url(procedure_path: procedure.path)
       else
@@ -10,11 +10,9 @@ module ProcedureHelper
   end
 
   def procedure_libelle(procedure)
-    parts = [procedure.libelle]
-    if procedure.brouillon?
-      parts << '(brouillon)'
-    end
-    parts.join(' ')
+    parts = procedure.brouillon? ? [content_tag(:span, 'démarche non publiée', class: 'badge')] : []
+    parts << procedure.libelle
+    safe_join(parts, ' ')
   end
 
   def procedure_modal_text(procedure, key)

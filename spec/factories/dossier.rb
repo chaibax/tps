@@ -97,9 +97,9 @@ FactoryBot.define do
     trait :accepte do
       after(:create) do |dossier, _evaluator|
         dossier.state = Dossier.states.fetch(:accepte)
-        dossier.processed_at = dossier.created_at + 1.minute
-        dossier.en_construction_at = dossier.created_at + 2.minutes
-        dossier.created_at = dossier.created_at + 3.minutes
+        dossier.processed_at ||= dossier.created_at + 1.minute
+        dossier.en_construction_at ||= dossier.created_at + 2.minutes
+        dossier.created_at ||= dossier.created_at + 3.minutes
         dossier.save!
       end
     end
@@ -134,6 +134,15 @@ FactoryBot.define do
         else
           'Vous avez validé les conditions.'
         end
+      end
+    end
+
+    trait :with_attestation do
+      after(:create) do |dossier, _evaluator|
+        if dossier.procedure.attestation_template.blank?
+          dossier.procedure.attestation_template = create(:attestation_template)
+        end
+        dossier.attestation = dossier.build_attestation
       end
     end
   end

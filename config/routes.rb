@@ -70,8 +70,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations',
-    passwords: 'users/passwords',
-    confirmations: 'users/confirmations'
+    passwords: 'users/passwords'
   }
 
   devise_scope :user do
@@ -143,9 +142,9 @@ Rails.application.routes.draw do
 
       patch 'pieces_justificatives' => 'description#pieces_justificatives'
 
+      # TODO: once these pages will be migrated to the new user design, replace these routes by a redirection
       get '/recapitulatif' => 'recapitulatif#show'
       post '/recapitulatif/initiate' => 'recapitulatif#initiate'
-
       post '/commentaire' => 'commentaires#create'
 
       get '/carte/position' => 'carte#get_position'
